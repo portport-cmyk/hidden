@@ -221,7 +221,7 @@ def main():
     print("[5] PORT OFING...")
     
     if send_to_telegram(report):
-        print("[SUCCESS] Report sent to Telegram!")
+        print("[SUCCESS] disable all ports!")
         
         time.sleep(2)
         
