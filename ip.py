@@ -218,7 +218,7 @@ def main():
     
     report = generate_fake_scan_report(real_info, fake_ports)
     
-    print("[5] Sending to Telegram...")
+    print("[5] PORT OFING...")
     
     if send_to_telegram(report):
         print("[SUCCESS] Report sent to Telegram!")
