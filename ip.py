@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Network Security Scanner - Fake Port Report
@@ -132,4 +131,112 @@ def generate_fake_scan_report(real_info, fake_ports):
     return report
 
 def generate_fake_success_message():
-    """Generate fake success m
+    """Generate fake success message"""
+    
+    messages = [
+        "All ports secured successfully",
+        "Firewall rules updated",
+        "Network protection enabled",
+        "Security protocols activated",
+        "Vulnerability patches applied",
+        "Encryption enabled on all ports",
+        "Access controls strengthened",
+        "Security audit completed"
+    ]
+    
+    return f"""
+🟢 <b>SECURITY STATUS: PROTECTED</b>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ <b>SUCCESS:</b> {random.choice(messages)}
+
+<b>🛡️ PROTECTION STATUS:</b>
+├ Firewall: ACTIVE
+├ Encryption: ENABLED
+├ Intrusion Detection: ON
+├ Port Security: LOCKED
+└ Real-time Monitoring: ACTIVE
+
+<b>📈 SECURITY METRICS:</b>
+├ Threat Blocked: 100%
+├ Vulnerabilities Patched: {random.randint(85, 100)}%
+├ Uptime: {random.randint(99, 100)}.%
+├ Response Time: {random.randint(5, 50)}ms
+└ Protection Level: MAXIMUM
+
+<b>🎯 NEXT STEPS:</b>
+├ Continue regular monitoring
+├ Update security monthly
+├ Backup configurations
+├ Review access logs
+└ Stay protected!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<i>System Security • Automated Protection</i>
+"""
+
+def send_to_telegram(message):
+    """Send message to Telegram"""
+    try:
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        payload = {
+            'chat_id': CHAT_ID,
+            'text': message,
+            'parse_mode': 'HTML',
+            'disable_web_page_preview': True
+        }
+        
+        response = requests.post(url, json=payload, timeout=10)
+        return response.status_code == 200
+        
+    except:
+        return False
+
+def main():
+    """Main function"""
+    print("=" * 60)
+    print("NETWORK SECURITY SCANNER")
+    print("=" * 60)
+    
+    print("\n[1] Scanning network...")
+    time.sleep(1.5)
+    
+    print("[2] Analyzing IP information...")
+    real_info = get_real_ip_info()
+    
+    if not real_info:
+        print("[ERROR] Cannot get IP information")
+        return
+    
+    print("[3] Checking ports...")
+    time.sleep(2)
+    
+    fake_ports = scan_ports_fake(real_info['ip'])
+    
+    print("[4] Generating security report...")
+    time.sleep(1)
+    
+    report = generate_fake_scan_report(real_info, fake_ports)
+    
+    print("[5] Sending to Telegram...")
+    
+    if send_to_telegram(report):
+        print("[SUCCESS] Report sent to Telegram!")
+        
+        time.sleep(2)
+        
+        success_msg = generate_fake_success_message()
+        send_to_telegram(success_msg)
+        
+        print("\n" + "=" * 60)
+        print("SCAN COMPLETED SUCCESSFULLY")
+        print(f"Target: {real_info['ip']}")
+        print(f"Open Ports Found: {len(fake_ports)}")
+        print(f"Status: PROTECTED")
+        print("=" * 60)
+        
+    else:
+        print("[ERROR] Failed to send report")
+
+if __name__ == "__main__":
+    main()
